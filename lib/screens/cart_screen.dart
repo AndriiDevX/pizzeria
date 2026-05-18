@@ -9,6 +9,7 @@ class CartScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cartPizzas = ref.watch(cartProvider);
+    final total = cartPizzas.fold(0.0,(sum, pizza) => sum + pizza.price);
     return Scaffold(
       appBar: AppBar(
         title: Text('CART'),
@@ -64,8 +65,15 @@ class CartScreen extends ConsumerWidget {
             ),
           );
         },
-      ),
-      bottomNavigationBar: Padding(
+      ),    
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Text('Total: \$$total', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          ),
+        Padding(
         padding: EdgeInsets.all(16),
         child: ElevatedButton(
           onPressed: () {
@@ -75,6 +83,10 @@ class CartScreen extends ConsumerWidget {
           child: Text('order'),
         ),
       ),
+        ],
+      )
+      
+      
     );
   }
 }
