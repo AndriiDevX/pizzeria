@@ -9,7 +9,10 @@ class CartScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cartPizzas = ref.watch(cartProvider);
-    final total = cartPizzas.fold(0.0,(sum, pizza) => sum + pizza.price);
+    final total = cartPizzas.fold(
+      0.0,
+      (sum, item) => sum + (item.pizza.price * item.quantity),
+    );
     return Scaffold(
       appBar: AppBar(
         title: Text('CART'),
@@ -29,7 +32,7 @@ class CartScreen extends ConsumerWidget {
                 Row(
                   children: [
                     Image.network(
-                      cartPizza.imageUrl,
+                      cartPizza.pizza.imageUrl,
                       width: 120,
                       height: 120,
                       fit: BoxFit.cover,
@@ -40,9 +43,34 @@ class CartScreen extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(cartPizza.name),
-                            Text(cartPizza.description),
-                            Text('\$${cartPizza.price}'),
+                            Text(
+                              cartPizza.pizza.name,
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              cartPizza.pizza.description,
+                              style: TextStyle(color: Colors.grey),
+                            ),
+
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                Text('\$${cartPizza.pizza.price}'),
+                                const SizedBox(width: 15,),
+                                Text(
+                                  'x${cartPizza.quantity}',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.orange,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -56,7 +84,7 @@ class CartScreen extends ConsumerWidget {
                     onPressed: () {
                       ref
                           .read(cartProvider.notifier)
-                          .removeFromCart(cartPizza.name);
+                          .removeFromCart(cartPizza.pizza.name);
                     },
                     icon: Icon(Icons.delete),
                   ),
@@ -65,28 +93,29 @@ class CartScreen extends ConsumerWidget {
             ),
           );
         },
-      ),    
+      ),
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Text('Total: \$$total', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text(
+              'Total: \$$total',
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
           ),
+          Padding(
+            padding: EdgeInsets.all(16),
+            child: ElevatedButton(
+              onPressed: () {
+                ref.read(cartProvider.notifier).clearCart();
+                context.go('/order');
+              },
+              child: Text('order'),
+            ),
           ),
-        Padding(
-        padding: EdgeInsets.all(16),
-        child: ElevatedButton(
-          onPressed: () {
-            ref.read(cartProvider.notifier).clearCart();
-            context.go('/order');
-          },
-          child: Text('order'),
-        ),
-      ),
         ],
-      )
-      
-      
+      ),
     );
   }
 }
