@@ -10,20 +10,21 @@ class LoginScreen extends StatelessWidget {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
     if (googleUser == null) return;
 
-    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-    
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+
     final AuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
+      idToken: googleAuth.idToken
     );
 
-    final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+    final UserCredential userCredential = await FirebaseAuth.instance
+        .signInWithCredential(credential);
 
     if (userCredential.user != null && context.mounted) {
       context.go('/home');
     }
   }
-  
 
   @override
   Widget build(BuildContext context) {
@@ -56,10 +57,7 @@ class LoginScreen extends StatelessWidget {
               const Text(
                 "Sign in to order the best pizza around",
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 15,
-                  color: Color(0xFF6C757D),
-                ),
+                style: TextStyle(fontSize: 15, color: Color(0xFF6C757D)),
               ),
               const Spacer(),
               ElevatedButton.icon(

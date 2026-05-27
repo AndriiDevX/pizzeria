@@ -22,6 +22,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            context.push('/profile');
+          } , 
+          icon: Icon(Icons.person)),
         title: const Text('PIZZERIA'),
         centerTitle: true,
         actions: [
@@ -29,6 +34,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             onPressed: () => context.go('/cart'),
             icon: const Icon(Icons.shopping_cart),
           ),
+        
         ],
       ),
       body: Column(

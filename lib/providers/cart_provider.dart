@@ -45,9 +45,11 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
       state = decodetList.map((item) => CartItem.fromJson(item)).toList();
     }
   }
-  Future <void> _saveCart() async{
+
+  Future<void> _saveCart() async {
     final prefs = await SharedPreferences.getInstance();
-    final String jsonString = jsonEncode(state.map((item) => item.toJson()).toList()
+    final String jsonString = jsonEncode(
+      state.map((item) => item.toJson()).toList(),
     );
     await prefs.setString('cart_items', jsonString);
   }

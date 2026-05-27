@@ -60,7 +60,7 @@ class CartScreen extends ConsumerWidget {
                             Row(
                               children: [
                                 Text('\$${cartPizza.pizza.price}'),
-                                const SizedBox(width: 15,),
+                                const SizedBox(width: 15),
                                 Text(
                                   'x${cartPizza.quantity}',
                                   style: TextStyle(
