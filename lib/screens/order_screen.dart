@@ -16,7 +16,7 @@ class OrderScreen extends StatelessWidget {
             Text('Order placed successfully!'),
             Text('Expected delivery: 30-45 minutes'),
             ElevatedButton(
-              onPressed: () => context.go('/'),
+              onPressed: () => context.go('/home'),
               child: Text('Back to menu'),
             ),
           ],

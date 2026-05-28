@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pizzeria/providers/cart_provider.dart';
+import 'package:pizzeria/providers/order_provider.dart';
 
 class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});
@@ -13,108 +14,180 @@ class CartScreen extends ConsumerWidget {
       0.0,
       (sum, item) => sum + (item.pizza.price * item.quantity),
     );
+
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: Text('CART'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        title: const Text(
+          'CART',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
+        ),
         centerTitle: true,
         leading: IconButton(
-          onPressed: () => context.go('/'),
-          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/home');
+            }
+          },
+          icon: const Icon(Icons.arrow_back, color: Colors.black87),
         ),
       ),
-      body: ListView.builder(
-        itemCount: cartPizzas.length,
-        itemBuilder: (context, index) {
-          final cartPizza = cartPizzas[index];
-          return Card(
-            child: Stack(
-              children: [
-                Row(
-                  children: [
-                    Image.network(
-                      cartPizza.pizza.imageUrl,
-                      width: 120,
-                      height: 120,
-                      fit: BoxFit.cover,
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+      body: cartPizzas.isEmpty
+          ? const Center(
+              child: Text(
+                'Your cart is empty',
+                style: TextStyle(color: Colors.grey, fontSize: 18),
+              ),
+            )
+          : ListView.builder(
+              itemCount: cartPizzas.length,
+              itemBuilder: (context, index) {
+                final cartPizza = cartPizzas[index];
+                return Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.04),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Stack(
+                      children: [
+                        Row(
                           children: [
-                            Text(
-                              cartPizza.pizza.name,
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: Image.network(
+                                  cartPizza.pizza.imageUrl,
+                                  width: 100,
+                                  height: 100,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              cartPizza.pizza.description,
-                              style: TextStyle(color: Colors.grey),
-                            ),
-
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Text('\$${cartPizza.pizza.price}'),
-                                const SizedBox(width: 15),
-                                Text(
-                                  'x${cartPizza.quantity}',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.orange,
-                                  ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 12.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      cartPizza.pizza.name,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Quantity: ${cartPizza.quantity}',
+                                      style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      '\$${(cartPizza.pizza.price * cartPizza.quantity).toStringAsFixed(2)}',
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.orange,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
+                              ),
                             ),
+                            const SizedBox(width: 40),
                           ],
                         ),
-                      ),
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: IconButton(
+                            onPressed: () {
+                              ref
+                                  .read(cartProvider.notifier)
+                                  .removeFromCart(cartPizza.pizza.name);
+                            },
+                            icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: IconButton(
-                    onPressed: () {
-                      ref
-                          .read(cartProvider.notifier)
-                          .removeFromCart(cartPizza.pizza.name);
-                    },
-                    icon: Icon(Icons.delete),
                   ),
+                );
+              },
+            ),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.only(bottom: 24, left: 16, right: 16, top: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 10,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Total:',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                ),
+                Text(
+                  '\$${total.toStringAsFixed(2)}',
+                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.orange),
                 ),
               ],
             ),
-          );
-        },
-      ),
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              'Total: \$$total',
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  elevation: 0,
+                ),
+                onPressed: cartPizzas.isEmpty
+                    ? null
+                    : () {
+                        ref.read(orderProvider.notifier).addOrder(cartPizzas, total);
+                        ref.read(cartProvider.notifier).clearCart();
+                        context.go('/order');
+                      },
+                child: const Text(
+                  'Order Now',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(16),
-            child: ElevatedButton(
-              onPressed: () {
-                ref.read(cartProvider.notifier).clearCart();
-                context.go('/order');
-              },
-              child: Text('order'),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
