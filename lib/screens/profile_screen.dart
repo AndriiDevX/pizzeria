@@ -117,7 +117,7 @@ class ProfileScreen extends ConsumerWidget {
                               Text('Date: $orderTime'),
 
                               Text(
-                                'Items: ${order.pizzas.map((p) => p.name).join(', ')}',
+                                'Items: ${order.items.map((p) => p.pizza.name).join(', ')}',
                                 style: const TextStyle(color: Colors.black87),
                               ),
                             ],
@@ -127,7 +127,7 @@ class ProfileScreen extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
-                                '\$${order.totalPrice.toStringAsFixed(2)}',
+                                '\$${order.totalAmount.toStringAsFixed(2)}',
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.green,
@@ -136,11 +136,9 @@ class ProfileScreen extends ConsumerWidget {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                order.status,
+                                'Delivered',
                                 style: TextStyle(
-                                  color: order.status == 'Preparing'
-                                      ? Colors.orange
-                                      : Colors.blue,
+                                  color: Colors.green,
                                   fontWeight: FontWeight.w500,
                                   fontSize: 12,
                                 ),

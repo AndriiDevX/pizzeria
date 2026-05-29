@@ -1,17 +1,33 @@
-import 'package:pizzeria/models/pizza_model.dart';
+import 'package:pizzeria/providers/cart_provider.dart';
 
-class OrderItem {
+class OrderModel {
   final String id;
-  final List<PizzaModel> pizzas;
-  final double totalPrice;
+  final List<CartItem> items;
+  final double totalAmount;
   final DateTime dateTime;
-  final String status;
 
-  OrderItem({
+  OrderModel({
     required this.id,
-    required this.pizzas,
-    required this.totalPrice,
+    required this.items,
+    required this.totalAmount,
     required this.dateTime,
-    this.status = 'Preparing',
   });
+
+  factory OrderModel.fromJson(Map<String, dynamic> json) {
+    return OrderModel(
+      id: json['id'],
+      items: (json['items'] as List).map((e) => CartItem.fromJson(e)).toList(),
+      totalAmount: (json['totalAmount'] as num).toDouble(),
+      dateTime: DateTime.parse(json['dateTime']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'items': items.map((e) => e.toJson()).toList(),
+      'totalAmount': totalAmount,
+      'dateTime': dateTime.toIso8601String(),
+    };
+  }
 }
