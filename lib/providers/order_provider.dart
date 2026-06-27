@@ -4,9 +4,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pizzeria/models/order_model.dart';
 import 'cart_provider.dart';
 
-class OrderNotifier extends StateNotifier<List<OrderModel>> {
-  OrderNotifier() : super([]) {
+class OrderNotifier extends Notifier<List<OrderModel>> {
+  @override
+  List<OrderModel> build() {
     _loadOrders();
+    return const [];
   }
 
   Future<void> _loadOrders() async {
@@ -15,7 +17,10 @@ class OrderNotifier extends StateNotifier<List<OrderModel>> {
 
     if (ordersJson != null) {
       final List<dynamic> decodedList = jsonDecode(ordersJson);
-      state = decodedList.map((item) => OrderModel.fromJson(item)).toList();
+      state = decodedList
+          .cast<Map<String, dynamic>>()
+          .map((item) => OrderModel.fromJson(item))
+          .toList();
     }
   }
 
@@ -37,8 +42,6 @@ class OrderNotifier extends StateNotifier<List<OrderModel>> {
   }
 }
 
-final orderProvider = StateNotifierProvider<OrderNotifier, List<OrderModel>>((
-  ref,
-) {
-  return OrderNotifier();
-});
+final orderProvider = NotifierProvider<OrderNotifier, List<OrderModel>>(
+  OrderNotifier.new,
+);

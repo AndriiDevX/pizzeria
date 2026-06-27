@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pizzeria/core/app_colors.dart';
+import 'package:pizzeria/core/app_strings.dart';
+import 'package:pizzeria/core/app_text_styles.dart';
 import 'package:pizzeria/data/pizza_data.dart';
 import 'package:pizzeria/providers/cart_provider.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -21,7 +24,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }).toList();
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppColors.grey50,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -30,16 +33,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           onPressed: () {
             context.push('/profile');
           },
-          icon: Icon(Icons.person, color: Colors.black87, size: 28),
+          icon: const Icon(Icons.person, color: AppColors.onSurface, size: 28),
         ),
         title: const Text(
-          'PIZZERIA',
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1.5,
-            color: Colors.black87,
-          ),
+          AppStrings.appTitle,
+          style: AppTextStyles.appBarTitle,
         ),
         centerTitle: true,
         actions: [
@@ -47,7 +45,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             onPressed: () => context.go('/cart'),
             icon: const Icon(
               Icons.shopping_cart,
-              color: Colors.black87,
+              color: AppColors.onSurface,
               size: 26,
             ),
           ),
@@ -59,13 +57,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.surface,
                 borderRadius: BorderRadius.circular(16),
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: AppColors.shadow,
                     blurRadius: 10,
-                    offset: const Offset(0, 4),
+                    offset: Offset(0, 4),
                   ),
                 ],
               ),
@@ -75,12 +73,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     searchQuery = value;
                   });
                 },
-                decoration: InputDecoration(
-                  hintText: 'Search pizza...',
-                  hintStyle: TextStyle(color: Colors.grey[400]),
-                  prefixIcon: const Icon(Icons.search, color: Colors.orange),
+                decoration: const InputDecoration(
+                  hintText: AppStrings.searchHint,
+                  hintStyle: TextStyle(color: AppColors.grey400),
+                  prefixIcon: Icon(Icons.search, color: AppColors.accent),
                   border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                  contentPadding: EdgeInsets.symmetric(vertical: 16),
                 ),
               ),
             ),
@@ -91,18 +89,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               itemBuilder: (context, index) {
                 final pizza = filteredPizzas[index];
                 return Container(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: AppColors.surface,
                     borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: AppColors.shadowLight,
                         blurRadius: 12,
-                        offset: const Offset(0, 4),
+                        offset: Offset(0, 4),
                       ),
                     ],
                   ),
@@ -120,7 +115,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                         ),
                       ),
-
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.only(
@@ -133,64 +127,42 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             children: [
                               Text(
                                 pizza.name,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: AppTextStyles.cardTitle,
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 pizza.description,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: 13,
-                                ),
+                                style: AppTextStyles.cardDescription,
                               ),
                               const SizedBox(height: 8),
-
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     '\$${pizza.price}',
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.orange,
-                                    ),
+                                    style: AppTextStyles.pizzaPrice,
                                   ),
-
                                   Material(
-                                    color: Colors.orange[50],
+                                    color: AppColors.accentLight,
                                     shape: const CircleBorder(),
                                     child: IconButton(
                                       constraints: const BoxConstraints(),
                                       padding: const EdgeInsets.all(8),
                                       icon: const Icon(
                                         Icons.add_shopping_cart,
-                                        color: Colors.orange,
+                                        color: AppColors.accent,
                                         size: 20,
                                       ),
                                       onPressed: () {
-                                        ref
-                                            .read(cartProvider.notifier)
-                                            .addToCart(pizza);
-
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
+                                        ref.read(cartProvider.notifier).addToCart(pizza);
+                                        ScaffoldMessenger.of(context).showSnackBar(
                                           SnackBar(
-                                            content: Text(
-                                              '${pizza.name} added to cart!',
-                                            ),
-                                            duration: const Duration(
-                                              seconds: 1,
-                                            ),
+                                            content: Text(AppStrings.addedToCart(pizza.name)),
+                                            duration: const Duration(seconds: 1),
                                             behavior: SnackBarBehavior.floating,
-                                            backgroundColor: Colors.orange,
+                                            backgroundColor: AppColors.accent,
                                           ),
                                         );
                                       },

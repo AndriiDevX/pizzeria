@@ -6,19 +6,35 @@ class OrderModel {
   final double totalAmount;
   final DateTime dateTime;
 
-  OrderModel({
+  const OrderModel({
     required this.id,
     required this.items,
     required this.totalAmount,
     required this.dateTime,
   });
 
+  OrderModel copyWith({
+    String? id,
+    List<CartItem>? items,
+    double? totalAmount,
+    DateTime? dateTime,
+  }) {
+    return OrderModel(
+      id: id ?? this.id,
+      items: items ?? this.items,
+      totalAmount: totalAmount ?? this.totalAmount,
+      dateTime: dateTime ?? this.dateTime,
+    );
+  }
+
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     return OrderModel(
-      id: json['id'],
-      items: (json['items'] as List).map((e) => CartItem.fromJson(e)).toList(),
+      id: json['id'] as String,
+      items: (json['items'] as List<dynamic>)
+          .map((e) => CartItem.fromJson(e as Map<String, dynamic>))
+          .toList(),
       totalAmount: (json['totalAmount'] as num).toDouble(),
-      dateTime: DateTime.parse(json['dateTime']),
+      dateTime: DateTime.parse(json['dateTime'] as String),
     );
   }
 
