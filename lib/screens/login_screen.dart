@@ -1,12 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pizzeria/core/app_colors.dart';
+import 'package:pizzeria/core/app_strings.dart';
+import 'package:pizzeria/core/app_text_styles.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
-  void _handleGoogleSignIn(BuildContext context) async {
+  Future<void> _handleGoogleSignIn(BuildContext context) async {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
     if (googleUser == null) return;
 
@@ -15,11 +18,11 @@ class LoginScreen extends StatelessWidget {
 
     final AuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken
+      idToken: googleAuth.idToken,
     );
 
-    final UserCredential userCredential = await FirebaseAuth.instance
-        .signInWithCredential(credential);
+    final UserCredential userCredential =
+        await FirebaseAuth.instance.signInWithCredential(credential);
 
     if (userCredential.user != null && context.mounted) {
       context.go('/home');
@@ -40,39 +43,30 @@ class LoginScreen extends StatelessWidget {
               const Icon(
                 Icons.local_pizza_outlined,
                 size: 80,
-                color: Color(0xFF212529),
+                color: AppColors.primary,
               ),
               const SizedBox(height: 24),
               const Text(
-                "Welcome back",
+                AppStrings.welcomeBack,
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF212529),
-                  letterSpacing: -0.5,
-                ),
+                style: AppTextStyles.loginTitle,
               ),
               const SizedBox(height: 8),
               const Text(
-                "Sign in to order the best pizza around",
+                AppStrings.signInSubtitle,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 15, color: Color(0xFF6C757D)),
+                style: AppTextStyles.loginSubtitle,
               ),
               const Spacer(),
               ElevatedButton.icon(
                 onPressed: () => _handleGoogleSignIn(context),
-                icon: const Icon(Icons.login, color: Colors.white),
+                icon: const Icon(Icons.login, color: AppColors.surface),
                 label: const Text(
-                  "Sign in with Google",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
+                  AppStrings.signInGoogle,
+                  style: AppTextStyles.buttonLabel,
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF212529),
+                  backgroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),

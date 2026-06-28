@@ -5,8 +5,16 @@ import 'package:pizzeria/models/pizza_model.dart';
 
 class CartItem {
   final PizzaModel pizza;
-  int quantity;
-  CartItem({required this.pizza, this.quantity = 1});
+  final int quantity;
+
+  const CartItem({required this.pizza, this.quantity = 1});
+
+  CartItem copyWith({PizzaModel? pizza, int? quantity}) {
+    return CartItem(
+      pizza: pizza ?? this.pizza,
+      quantity: quantity ?? this.quantity,
+    );
+  }
 
   Map<String, dynamic> toJson() {
     return {
@@ -21,19 +29,21 @@ class CartItem {
   factory CartItem.fromJson(Map<String, dynamic> json) {
     return CartItem(
       pizza: PizzaModel(
-        name: json['name'],
-        description: json['description'],
-        price: json['price'],
-        imageUrl: json['imageUrl'],
+        name: json['name'] as String,
+        description: json['description'] as String,
+        price: (json['price'] as num).toDouble(),
+        imageUrl: json['imageUrl'] as String,
       ),
-      quantity: json['quantity'],
+      quantity: json['quantity'] as int,
     );
   }
 }
 
-class CartNotifier extends StateNotifier<List<CartItem>> {
-  CartNotifier() : super([]) {
+class CartNotifier extends Notifier<List<CartItem>> {
+  @override
+  List<CartItem> build() {
     _loadCart();
+    return const [];
   }
 
   Future<void> _loadCart() async {
@@ -41,8 +51,11 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
     final String? jsonString = prefs.getString('cart_items');
 
     if (jsonString != null) {
-      final List<dynamic> decodetList = jsonDecode(jsonString);
-      state = decodetList.map((item) => CartItem.fromJson(item)).toList();
+      final List<dynamic> decodedList = jsonDecode(jsonString);
+      state = decodedList
+          .cast<Map<String, dynamic>>()
+          .map((item) => CartItem.fromJson(item))
+          .toList();
     }
   }
 
@@ -60,7 +73,9 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
     );
     if (existingIndex != -1) {
       final newState = [...state];
-      newState[existingIndex].quantity++;
+      final existingItem = newState[existingIndex];
+      newState[existingIndex] =
+          existingItem.copyWith(quantity: existingItem.quantity + 1);
       state = newState;
     } else {
       state = [...state, CartItem(pizza: pizza)];
@@ -74,11 +89,11 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
   }
 
   void clearCart() {
-    state = [];
+    state = const [];
     _saveCart();
   }
 }
 
-final cartProvider = StateNotifierProvider<CartNotifier, List<CartItem>>(
-  (ref) => CartNotifier(),
+final cartProvider = NotifierProvider<CartNotifier, List<CartItem>>(
+  CartNotifier.new,
 );

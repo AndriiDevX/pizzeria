@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:pizzeria/core/app_colors.dart';
+import 'package:pizzeria/core/app_strings.dart';
+import 'package:pizzeria/core/app_text_styles.dart';
 import 'package:pizzeria/providers/order_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -17,8 +20,8 @@ class ProfileScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Profile',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          AppStrings.profileTitle,
+          style: AppTextStyles.sectionTitle,
         ),
         centerTitle: true,
       ),
@@ -38,21 +41,20 @@ class ProfileScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 20),
           Text(
-            user?.displayName ?? 'Guest',
-            style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+            user?.displayName ?? AppStrings.guestUser,
+            style: AppTextStyles.profileTitle,
           ),
           const SizedBox(height: 8),
           Text(
-            user?.email ?? 'No email available',
-            style: const TextStyle(fontSize: 18, color: Colors.grey),
+            user?.email ?? AppStrings.noEmailAvailable,
+            style: AppTextStyles.profileSubtitle,
           ),
           const SizedBox(height: 20),
 
-          // Кнопка логауту
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
+              backgroundColor: AppColors.redAccent,
+              foregroundColor: AppColors.surface,
             ),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
@@ -62,7 +64,7 @@ class ProfileScreen extends ConsumerWidget {
               }
             },
             icon: const Icon(Icons.logout),
-            label: const Text('Logout'),
+            label: const Text(AppStrings.logout),
           ),
 
           const SizedBox(height: 30),
@@ -76,11 +78,8 @@ class ProfileScreen extends ConsumerWidget {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                'Order History (${orderHistory.length})',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                '${AppStrings.orderHistoryLabel} (${orderHistory.length})',
+                style: AppTextStyles.sectionTitle,
               ),
             ),
           ),
@@ -89,8 +88,8 @@ class ProfileScreen extends ConsumerWidget {
             child: orderHistory.isEmpty
                 ? const Center(
                     child: Text(
-                      'You haven\'t ordered anything yet.',
-                      style: TextStyle(color: Colors.grey, fontSize: 16),
+                      AppStrings.orderHistoryEmpty,
+                      style: AppTextStyles.historySubtitle,
                     ),
                   )
                 : ListView.builder(
@@ -108,17 +107,16 @@ class ProfileScreen extends ConsumerWidget {
                         ),
                         child: ListTile(
                           title: Text(
-                            'Order #${order.id.substring(order.id.length - 5)}',
+                            AppStrings.orderNumber(order.id),
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Date: $orderTime'),
-
+                              Text('${AppStrings.orderDate} $orderTime'),
                               Text(
                                 'Items: ${order.items.map((p) => p.pizza.name).join(', ')}',
-                                style: const TextStyle(color: Colors.black87),
+                                style: const TextStyle(color: AppColors.onSurface),
                               ),
                             ],
                           ),
@@ -130,18 +128,14 @@ class ProfileScreen extends ConsumerWidget {
                                 '\$${order.totalAmount.toStringAsFixed(2)}',
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.green,
+                                  color: AppColors.success,
                                   fontSize: 16,
                                 ),
                               ),
                               const SizedBox(height: 4),
-                              Text(
-                                'Delivered',
-                                style: TextStyle(
-                                  color: Colors.green,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 12,
-                                ),
+                              const Text(
+                                AppStrings.delivered,
+                                style: AppTextStyles.deliveredLabel,
                               ),
                             ],
                           ),
